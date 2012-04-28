@@ -9,6 +9,7 @@
 # 2001 (C) Øyvind Grønnesby <oyving@pvv.ntnu.no>
 #
 # 2003-02-06: Thanks to John Farrell for spotting a bug!
+# Adapted by David Francos to use Fap instead of Ook, FapFap! 
 
 import sys, string, types
 
@@ -29,7 +30,7 @@ def sane(code):
     else:
         return 0
 
-class OokInterpreter:
+class FapInterpreter:
 
     memory = [0]
     memptr = 0
@@ -39,14 +40,14 @@ class OokInterpreter:
     codei  = 0
 
     def __langinit(self):
-        self.lang   = {'Ook. Ook?' : self.mvptrup,
-                       'Ook? Ook.' : self.mvptrdn,
-                       'Ook. Ook.' : self.incptr,
-                       'Ook! Ook!' : self.decptr,
-                       'Ook. Ook!' : self.readc,
-                       'Ook! Ook.' : self.prntc,
-                       'Ook! Ook?' : self.startp,
-                       'Ook? Ook!' : self.endp}
+        self.lang   = {'Fap. Fap?' : self.mvptrup,
+                       'Fap? Fap.' : self.mvptrdn,
+                       'Fap. Fap.' : self.incptr,
+                       'Fap! Fap!' : self.decptr,
+                       'Fap. Fap!' : self.readc,
+                       'Fap! Fap.' : self.prntc,
+                       'Fap! Fap?' : self.startp,
+                       'Fap? Fap!' : self.endp}
 
     def mem(self):
         return self.memory[self.memptr]
@@ -58,7 +59,7 @@ class OokInterpreter:
         self.file.close()
         if not sane(self.code):
             print self.code
-            raise "OokSyntaxError", "Code not sane."
+            raise "FapSyntaxError", "Code not sane."
         else:
             self.cmds()
 
@@ -85,16 +86,16 @@ class OokInterpreter:
             return None
         while 1:
             i += 1
-            if self.code[i] == 'Ook! Ook?':
+            if self.code[i] == 'Fap! Fap?':
                 ook += 1
-            if self.code[i] == 'Ook? Ook!':
+            if self.code[i] == 'Fap? Fap!':
                 if ook == 0:
                     self.codei = i
                     break
                 else:
                     ook -= 1
             if i >= self.len:
-                raise 'OokSyntaxError', 'Unmatched "Ook! Ook?".'
+                raise 'FapSyntaxError', 'Unmatched "Fap! Fap?".'
 
     def endp(self):
         ook = 0
@@ -102,19 +103,19 @@ class OokInterpreter:
         if self.memory[self.memptr] == 0:
             return None
         if i == 0:
-            raise 'OokSyntaxError', 'Unmatched "Ook? Ook!".'
+            raise 'FapSyntaxError', 'Unmatched "Fap? Fap!".'
         while 1:
             i -= 1
-            if self.code[i] == 'Ook? Ook!':
+            if self.code[i] == 'Fap? Fap!':
                 ook += 1
-            if self.code[i] == 'Ook! Ook?':
+            if self.code[i] == 'Fap! Fap?':
                 if ook == 0:
                     self.codei = i
                     break
                 else:
                     ook -= 1
             if i <= 0:
-                raise 'OokSyntaxError', 'Unmatched "Ook? Ook!".'
+                raise 'FapSyntaxError', 'Unmatched "Fap? Fap!".'
 
     def incptr(self):
         self.memory[self.memptr] += 1
@@ -141,5 +142,5 @@ class OokInterpreter:
 
 
 if __name__ == '__main__':
-    o = OokInterpreter(sys.argv[1])
+    o = FapInterpreter(sys.argv[1])
     o.run()

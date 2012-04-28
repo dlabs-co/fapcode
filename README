@@ -1,3 +1,6 @@
-This is an interpreter for the esoteric language Ook!
+This is an interpreter for fapcode, a simple modification using "Fap" instead of Ook to the esoteric language Ook.
+Forked from the python ook interpreter by Oyvind Gronnesby, available at https://github.com/oyving/pook
+All Ook language specs are working for Fapcode, just replacing "Ook" by Fap.
 
+You can have a look at original Ook docs at:
   http://www.dangermouse.net/esoteric/ook.html
