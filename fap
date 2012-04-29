@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#
+# -*- coding: utf-8 -*-
 # an Ook! interpreter written in python
 #
 # you can wrap the memory pointer to the end of the the memory cells
