@@ -1,146 +1,74 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# an Ook! interpreter written in python
-#
-# you can wrap the memory pointer to the end of the the memory cells
-# but you cannot do the same trick to get the first cell, since going
-# further out would just initiate a new memory cell.
-#
-# 2001 (C) Øyvind Grønnesby <oyving@pvv.ntnu.no>
-#
-# 2003-02-06: Thanks to John Farrell for spotting a bug!
-# Adapted by David Francos to use Fap instead of Ook, FapFap! 
+# Based on work by  Øyvind Grønnesby <oyving@pvv.ntnu.no>
+import sys
 
-import sys, string, types
-
-def massage(text):
-    ret = []
-    tok = []
-
-    for line in text:
-        if line[0] != ";" and line != "\n" and line != "":
-            for token in line.split(" "):
-                if token != "":
-                    ret.append(token.strip())
-    return ret
-
-def sane(code):
-    if len(code) % 2 == 0:
-        return 1
-    else:
-        return 0
-
-class FapInterpreter:
-
-    memory = [0]
-    memptr = 0
-    file   = None
-    code   = None
-    len    = 0
-    codei  = 0
-
-    def __langinit(self):
-        self.lang   = {'Fap. Fap?' : self.mvptrup,
-                       'Fap? Fap.' : self.mvptrdn,
-                       'Fap. Fap.' : self.incptr,
-                       'Fap! Fap!' : self.decptr,
-                       'Fap. Fap!' : self.readc,
-                       'Fap! Fap.' : self.prntc,
-                       'Fap! Fap?' : self.startp,
-                       'Fap? Fap!' : self.endp}
-
-    def mem(self):
-        return self.memory[self.memptr]
-
-    def __init__(self, file):
-        self.__langinit()
-        self.file = open(file)
-        self.code = massage(self.file.readlines())
-        self.file.close()
-        if not sane(self.code):
-            print self.code
-            raise "FapSyntaxError", "Code not sane."
-        else:
-            self.cmds()
+class GenericTuringInterpreter(object):
+    pointer, current_position, memory, jump_to = 0, 0, [0], False
+    def __init__(self, file_, language):
+        self.language = language
+        with open(file_) as fileo:
+            self.code = self.massage(fileo.readlines())
+        if not self.is_code_sane:
+            raise Exception("Code not sane.")
 
     def run(self):
-        self.codei = 0
-        self.len  = len(self.code)
-        while self.codei < self.len:
-            self.lang[self.code[self.codei]]()
-            self.codei += 1
+        for num, code_ in enumerate(self.code):
+            if self.jump_to:
+                if self.jump_to != num:
+                    next
+                self.jump_to = False
+            self.current_position = num
+            getattr(self, self.language[code_])()
 
-    def cmds(self):
-        i = 0
-        l = len(self.code)
-        new = []
-        while i < l:
-            new.append(string.join((self.code[i], self.code[i+1]), " "))
-            i += 2
-        self.code = new
+    @property
+    def mem(self):
+        return self.memory[self.pointer]
 
-    def startp(self):
-        ook = 0
-        i   = self.codei
-        if self.memory[self.memptr] != 0:
-            return None
-        while 1:
-            i += 1
-            if self.code[i] == 'Fap! Fap?':
-                ook += 1
-            if self.code[i] == 'Fap? Fap!':
-                if ook == 0:
-                    self.codei = i
-                    break
-                else:
-                    ook -= 1
-            if i >= self.len:
-                raise 'FapSyntaxError', 'Unmatched "Fap! Fap?".'
+    def increase_pointer(self):
+        self.memory[self.pointer] += 1
 
-    def endp(self):
-        ook = 0
-        i   = self.codei
-        if self.memory[self.memptr] == 0:
-            return None
-        if i == 0:
-            raise 'FapSyntaxError', 'Unmatched "Fap? Fap!".'
-        while 1:
-            i -= 1
-            if self.code[i] == 'Fap? Fap!':
-                ook += 1
-            if self.code[i] == 'Fap! Fap?':
-                if ook == 0:
-                    self.codei = i
-                    break
-                else:
-                    ook -= 1
-            if i <= 0:
-                raise 'FapSyntaxError', 'Unmatched "Fap? Fap!".'
+    def decrease_pointer(self):
+        self.memory[self.pointer] -= 1
 
-    def incptr(self):
-        self.memory[self.memptr] += 1
-
-    def decptr(self):
-        self.memory[self.memptr] -= 1
-
-    def mvptrup(self):
-        self.memptr += 1
-        if len(self.memory) <= self.memptr:
+    def move_pointer_up(self):
+        self.pointer += 1
+        if len(self.memory) <= self.pointer:
             self.memory.append(0)
 
-    def mvptrdn(self):
-        if self.memptr == 0:
-            self.memptr = len(self.memory) - 1
-        else:
-            self.memptr -= 1
+    def move_pointer_down(self):
+        self.pointer = self.pointer - 1 if self.pointer > 0 else len(self.memory) - 1
 
     def readc(self):
-        self.memory[self.memptr] = ord(sys.stdin.read(1))
+        self.memory[self.pointer] = ord(sys.stdin.read(1))
 
-    def prntc(self):
-        sys.stdout.write(chr(self.mem()))
+    def printc(self):
+        sys.stdout.write(chr(self.mem))
 
+    def if_(self):
+        if self.memory[self.pointer] != 0: self.ifelse()
+
+    def else_(self):
+        if self.memory[self.pointer] == 0: self.ifelse()
+
+    def ifelse(self):
+        while curr_code != "FapEnd" :
+            self.current_position += 1
+            curr_code = self.code[self.current_position]
+        if curr_code != "FapEnd":
+            raise Exception("Unmatched Fap?")
+
+class FapCodeInterpreter(GenericTuringInterpreter):
+    @property
+    def is_code_sane(self):
+        return True 
+
+    def massage(self, text):
+        ret = []
+        for line in text:
+            if line[0] != ";" and line != "\n" and line != "":
+                ret += [ token.strip() for token in line.split(' ') if token != "" ]
+        return ret
 
 if __name__ == '__main__':
-    o = FapInterpreter(sys.argv[1])
-    o.run()
+    FapCodeInterpreter(sys.argv[1], { 'FapUp' : "move_pointer_up", 'FapDown.' : "move_pointer_down", 'FapFapFap' : "increase_pointer", 'Pr0n' : "decrease_pointer", 'Slurp' : "readc", 'Cum' : "printc", 'Fap?' : "if_", 'Fap!' : "else_", }).run()
