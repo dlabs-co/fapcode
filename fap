@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Based on work by  Øyvind Grønnesby <oyving@pvv.ntnu.no>
+# Briefly based on work by  Øyvind Grønnesby <oyving@pvv.ntnu.no>
+# Copyright 2012 David Francos Cuartero
+# This entire program is licensed under the terms of GPL-2+
 import sys
 
 class GenericTuringInterpreter(object):
@@ -9,7 +11,7 @@ class GenericTuringInterpreter(object):
         self.language = language
         with open(file_) as fileo:
             self.code = self.massage(fileo.readlines())
-        if not self.is_code_sane:
+        if not self.is_code_sane():
             raise Exception("Code not sane.")
 
     def run(self):
@@ -59,7 +61,6 @@ class GenericTuringInterpreter(object):
             raise Exception("Unmatched Fap?")
 
 class FapCodeInterpreter(GenericTuringInterpreter):
-    @property
     def is_code_sane(self):
         return True 
 
