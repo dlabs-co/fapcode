@@ -12,7 +12,7 @@ class GenericTuringInterpreter(object):
         with open(file_) as fileo:
             self.code = self.massage(fileo.readlines())
         if not self.is_code_sane():
-            raise Exception("Code not sane.")
+            raise Exception("Code not sane, might have std's.")
 
     def run(self):
         for num, code_ in enumerate(self.code):
