@@ -1,5 +1,5 @@
-Inspired on the Ook esoteric language, I've created this turing-machine esoteric language, ready for fapcode.com
-I firstly used this https://github.com/oyving/pook code to make the interpreter, but as is was a little bit old-fashioned (back from 2001) and the code was too large for me (150 lines of code), I've practically rewritten it, leaving only stuff that would have been the same way anyways.
+Inspired on the Ook esoteric language, and with the idea from Francisco Grisen, we proudly present this turing-machine esoteric language, ready for fapcode.com
+As Oyving's pook code was too big for me, I've rewritten it and left it on a 75-line interpreter for Fapcode (wich has a few diferences from Ook)
 
 The language specification is as follows, basically:
 
